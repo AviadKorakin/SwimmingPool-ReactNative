@@ -8,11 +8,12 @@ import {
     Pressable,
 } from "react-native";
 import {ILesson, WeeklyLessonData} from "@/models/lesson";
-import {useRouter} from "expo-router";
+import {useFocusEffect, useRouter} from "expo-router";
 import {useFormData} from "@/components/InstructorProvider";
 import {Icon} from "@clerk/clerk-js/dist/types/ui/primitives";
 import {Ionicons} from "@expo/vector-icons";
 import {useChangeContext} from "@/components/ChangeProvider";
+import {useUpdateContext} from "@/components/ProviderBetweenFolders";
 
 const colors = [
     "#FFB6C1", // Light Pink
@@ -33,6 +34,7 @@ const MyCalendar = () => {
     const { doesChanged, setDoesChanged } = useChangeContext();
     const {instructorDetails, setInstructorDetails} = useFormData();
     const [weeklyLessons, setWeeklyLessons] = useState<WeeklyLessonData | null>(null);
+    const { canUpdate, resetUpdates  } = useUpdateContext();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [todayDate, setTodayDate] = useState(new Date());
@@ -41,6 +43,7 @@ const MyCalendar = () => {
     const [expandedLessons, setExpandedLessons] = useState<Record<string, boolean>>({});
     const [workingHours, setWorkingHours] = useState<{ [day: string]: { start: string; end: string }[] } | null>(null);
     const router = useRouter();
+    const className = "MyCalendar";
 
 
     const fetchWeeklyLessons = async (date: Date) => {
@@ -127,6 +130,19 @@ const MyCalendar = () => {
             setDoesChanged(false); // Reset the state after handling the change
         }
     }, [doesChanged]);
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("Checking for updates...");
+            if (canUpdate(className)) {
+                console.log(`Fetching data for ${className}`);
+                fetchWeeklyLessons(currentDate);
+            } else {
+                console.log(`${className} has already been updated.`);
+            }
+        }, []) // Ensures this runs only when the screen is focused
+    );
+
     useEffect(() => {
         if (instructorDetails) {
             fetchWorkingHours();

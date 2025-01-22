@@ -5,6 +5,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {useAuth} from '@clerk/clerk-expo';
 import CustomHeader from "@/components/CustomHeader";
 import {InstructorProvider} from "@/components/InstructorProvider";
+import { UpdateProvider } from '@/components/ProviderBetweenFolders';
 
 export const LogoutButton = () => {
     const {signOut} = useAuth();
@@ -39,9 +40,11 @@ export const LogoutButton = () => {
 const TabsPage = () => {
     const {isSignedIn} = useAuth();
     const router = useRouter();
+    const defaultClasses = new Set(["showMyRequests","MyCalendar"]);
 
     return (
         <InstructorProvider>
+            <UpdateProvider  defaultUpdatedClasses={defaultClasses}>
             <Tabs
                 screenOptions={{
                     header: ({options}) => (
@@ -93,6 +96,7 @@ const TabsPage = () => {
                     redirect={!isSignedIn}
                 />
             </Tabs>
+            </UpdateProvider>
         </InstructorProvider>
     );
 };

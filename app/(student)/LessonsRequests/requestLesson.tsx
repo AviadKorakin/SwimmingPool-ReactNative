@@ -142,18 +142,16 @@ const requestLesson = () => {
         }
     }, [doesChanged]);
 
-
     useFocusEffect(
         useCallback(() => {
-            if(doesChanged) {
-                if (canUpdate(className)) {
-                    fetchWorkingHours(currentDate); // Refresh lessons
-                } else {
-                    console.log(`${className} has already been updated.`);
-                }
-                setDoesChanged(false); // Reset the state after handling the change
+            console.log("Checking for updates...");
+            if (canUpdate(className)) {
+                console.log(`Fetching data for ${className}`);
+                fetchWorkingHours(currentDate); // Refresh lessons
+            } else {
+                console.log(`${className} has already been updated.`);
             }
-        }, []) // Empty dependency array ensures this runs only on screen focus/unfocus
+        }, []) // Ensures this runs only when the screen is focused
     );
 
     useEffect(() => {

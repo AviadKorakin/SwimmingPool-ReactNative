@@ -11,9 +11,12 @@ import {
 import {Ionicons} from "@expo/vector-icons";
 import {ILessonRequest} from "@/models/lessonRequest";
 import {useFormData} from "@/components/InstructorProvider";
+import {useUpdateContext} from "@/components/ProviderBetweenFolders";
+import {useFocusEffect} from "expo-router";
 
 
 const showMyRequests = () => {
+    const { canUpdate, resetUpdates  } = useUpdateContext();
     const {instructorDetails,setInstructorDetails} = useFormData();
     const [currentDate, setCurrentDate] = useState(() => {
         const today = new Date();
@@ -95,7 +98,8 @@ const showMyRequests = () => {
                 "Success",
                 `Lesson request successfully ${action === "approve" ? "approved" : "rejected"}.`
             );
-            fetchLessonRequests(); // Refresh the data
+            resetUpdates();
+            fetchLessonRequests();
         } catch (err) {
             Alert.alert("Error", err instanceof Error ? err.message : "An unknown error occurred.");
         }
@@ -105,6 +109,19 @@ const showMyRequests = () => {
     useEffect(() => {
         fetchLessonRequests();
     }, [currentDate, statusFilter]);
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("Checking for updates...");
+            if (canUpdate(className)) {
+                console.log(`Fetching data for ${className}`);
+                fetchLessonRequests();
+            } else {
+                console.log(`${className} has already been updated.`);
+            }
+        }, []) // Ensures this runs only when the screen is focused
+    );
+
 
 
     const toggleStatusFilter = (status: string) => {

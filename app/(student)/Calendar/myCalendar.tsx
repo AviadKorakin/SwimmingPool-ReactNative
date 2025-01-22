@@ -156,6 +156,7 @@ const MyCalendar = () => {
     useEffect(() => {
         fetchWeeklyLessons(currentDate);
     }, [currentDate, selectedInstructors]);
+
     useEffect(() => {
         if (doesChanged) {
             fetchWeeklyLessons(currentDate); // Refresh lessons
@@ -165,12 +166,14 @@ const MyCalendar = () => {
 
     useFocusEffect(
         useCallback(() => {
+            console.log("Checking for updates...");
             if (canUpdate(className)) {
-                fetchWeeklyLessons(currentDate); // Refresh lessons
+                console.log(`Fetching data for ${className}`);
+                fetchWeeklyLessons(currentDate);
             } else {
                 console.log(`${className} has already been updated.`);
             }
-        }, []) // Empty dependency array ensures this runs only on screen focus/unfocus
+        }, []) // Ensures this runs only when the screen is focused
     );
 
     const handleWeekChange = (direction: number) => {

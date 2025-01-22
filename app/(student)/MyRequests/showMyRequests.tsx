@@ -106,14 +106,17 @@ const showMyRequests = () => {
     useEffect(() => {
         fetchLessonRequests();
     }, [currentDate, statusFilter]);
+
     useFocusEffect(
         useCallback(() => {
+            console.log("Checking for updates...");
             if (canUpdate(className)) {
-                fetchLessonRequests()
+                console.log(`Fetching data for ${className}`);
+                fetchLessonRequests();
             } else {
                 console.log(`${className} has already been updated.`);
             }
-        }, []) // Empty dependency array ensures this runs only on screen focus/unfocus
+        }, []) // Ensures this runs only when the screen is focused
     );
 
 

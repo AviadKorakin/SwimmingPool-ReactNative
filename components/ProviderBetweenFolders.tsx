@@ -1,8 +1,8 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useRef, useContext } from "react";
 
 // Define the type for the context
 interface UpdateContextType {
-    updatedClasses: Set<string>;
+    updatedClasses: Map<string, number>;
     canUpdate: (className: string) => boolean;
     resetUpdates: () => void;
     setUpdatedClassesFromDefault: (defaultClasses: Set<string>) => void; // Function to set default classes
@@ -16,30 +16,52 @@ export const UpdateProvider: React.FC<{ children: React.ReactNode; defaultUpdate
                                                                                                                  children,
                                                                                                                  defaultUpdatedClasses = new Set(), // Default to an empty set if not provided
                                                                                                              }) => {
-    const [updatedClasses, setUpdatedClasses] = useState<Set<string>>(new Set(defaultUpdatedClasses));
+    // Initialize the Map with default classes, setting their value to 1 (indicating "needs update")
+    const initializeMap = (classes: Set<string>) => {
+        const map = new Map<string, number>();
+        classes.forEach((className) => map.set(className, 1));
+        return map;
+    };
+
+    // Use useRef to store the map for better performance and to avoid unnecessary re-renders
+    const updatedClassesRef = useRef<Map<string, number>>(initializeMap(defaultUpdatedClasses));
 
     // Check if the class can update, and mark it as updated
     const canUpdate = (className: string): boolean => {
-        if (updatedClasses.has(className)) {
+        const currentValue = updatedClassesRef.current.get(className);
+
+        if (currentValue === 0) {
+            console.log(`Class "${className}" has already been updated.`);
             return false;
         }
-        setUpdatedClasses((prev) => new Set(prev).add(className));
+
+        // Update the value to 0
+        console.log(`Updating class "${className}" to updated (value = 0).`);
+        updatedClassesRef.current.set(className, 0);
         return true;
     };
 
-    // Reset all updates
+    // Reset all updates to their initial state (value = 1)
     const resetUpdates = () => {
-        setUpdatedClasses(new Set());
+        console.log("Resetting updates...");
+        updatedClassesRef.current.forEach((_, key) => updatedClassesRef.current.set(key, 1));
+        console.log("Reset updatedClasses map:", updatedClassesRef.current);
     };
 
     // Set default classes programmatically
     const setUpdatedClassesFromDefault = (defaultClasses: Set<string>) => {
-        setUpdatedClasses(defaultClasses);
+        console.log("Setting updatedClasses from default set:", defaultClasses);
+        updatedClassesRef.current = initializeMap(defaultClasses);
     };
 
     return (
         <UpdateContext.Provider
-            value={{ updatedClasses, canUpdate, resetUpdates, setUpdatedClassesFromDefault }}
+            value={{
+                updatedClasses: updatedClassesRef.current,
+                canUpdate,
+                resetUpdates,
+                setUpdatedClassesFromDefault,
+            }}
         >
             {children}
         </UpdateContext.Provider>
