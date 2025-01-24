@@ -237,7 +237,6 @@ const AddLessonRequest = () => {
                     errorBody?.error || `Error ${response.status}: Failed to add lesson request.`;
                 throw new Error(errorMessage); // Throw error with detailed message
             }
-            setDoesChanged(true);
             resetUpdates();
             Alert.alert("Success", "Lesson request added successfully!", [
                 { text: "OK", onPress: () => router.back() },

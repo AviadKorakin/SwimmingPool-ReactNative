@@ -3,7 +3,7 @@ import {Slot, useRouter, useSegments} from 'expo-router';
 import {useEffect} from 'react';
 import {tokenCache} from "@/cache";
 
-const CLERK_PUBLISHABLE_KEY = 'pk_test_Y29uY2lzZS1kb2xwaGluLTQzLmNsZXJrLmFjY291bnRzLmRldiQ';
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const InitialLayout = () => {
     const {isLoaded, isSignedIn} = useAuth();
@@ -30,7 +30,7 @@ const InitialLayout = () => {
 
 const RootLayout = () => {
     return (
-        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
             <InitialLayout/>
         </ClerkProvider>
     );

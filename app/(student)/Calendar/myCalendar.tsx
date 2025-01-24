@@ -173,7 +173,7 @@ const MyCalendar = () => {
             } else {
                 console.log(`${className} has already been updated.`);
             }
-        }, []) // Ensures this runs only when the screen is focused
+        }, [currentDate]) // Ensures this runs only when the screen is focused
     );
 
     const handleWeekChange = (direction: number) => {

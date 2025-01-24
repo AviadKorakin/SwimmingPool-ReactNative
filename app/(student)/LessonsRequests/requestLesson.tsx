@@ -135,12 +135,6 @@ const requestLesson = () => {
         fetchWorkingHours(currentDate);
     }, [currentDate, selectedStyles, selectedInstructors]);
 
-    useEffect(() => {
-        if (doesChanged) {
-            fetchWorkingHours(currentDate); // Refresh lessons
-            setDoesChanged(false); // Reset the state after handling the change
-        }
-    }, [doesChanged]);
 
     useFocusEffect(
         useCallback(() => {
@@ -151,7 +145,7 @@ const requestLesson = () => {
             } else {
                 console.log(`${className} has already been updated.`);
             }
-        }, []) // Ensures this runs only when the screen is focused
+        }, [currentDate]) // Ensures this runs only when the screen is focused
     );
 
     useEffect(() => {
